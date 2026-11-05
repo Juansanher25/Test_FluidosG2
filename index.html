@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuestionario Interactivo — Bombas Hidráulicas, Tuberías en Serie y Operación de Bombas Centrífugas | Universidad de América 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0e2a3f;
+    --navy-dark:#091d2b;
+    --gold:#c9a227;
+    --gold-hover:#d4af37;
+    --ink:#1c2b36;
+    --muted:#607282;
+    --bg:#f2f6fa;
+    --card:#ffffff;
+    --border:#d8e1e9;
+    --ok:#1e7a46;
+    --ok-bg:#e7f7ec;
+    --bad:#b3261e;
+    --bad-bg:#fdecec;
+    --radius:14px;
+    --shadow:0 8px 24px rgba(13,24,38,0.08);
+    --font:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--font);line-height:1.55;font-size:16px
+  }
+  .container{max-width:900px;margin:0 auto;padding:28px 20px 100px}
+  a{color:var(--navy)}
+
+  .uni-header{
+    background:var(--navy-dark);color:#fff;padding:36px 32px 28px;
+    border-bottom:8px solid var(--gold)
+  }
+  .uni-header .container{display:flex;flex-direction:column;gap:14px;align-items:flex-start;padding-left:0;padding-right:0}
+  .uni-kind{font-size:12.5px;letter-spacing:2.5px;text-transform:uppercase;font-weight:800;color:var(--gold)}
+  .uni-div{font-size:12.5px;color:#b9c6d2;margin-top:2px}
+  .uni-title h1{margin:8px 0 4px;font-size:30px;line-height:1.18;font-weight:800;letter-spacing:-0.3px}
+  .uni-sub{margin:0;font-size:15px;color:#cfdbe5;font-weight:400}
+  .uni-prof{margin-top:12px;font-size:15px}
+  .uni-prof strong{color:#fff;display:block}
+  .uni-prof span{color:#b9c6d2}
+  .uni-rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin-top:14px}
+
+  .screen{display:none}
+  .screen.active{display:block}
+  .screen.hidden{display:none}
+
+  .card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius);padding:30px;box-shadow:var(--shadow)
+  }
+  .start-card{padding:40px 32px}
+  .start-card h2{margin:0 0 12px;font-size:24px;display:flex;align-items:center;gap:10px}
+  .start-card h2 i{color:var(--gold)}
+  .lead{font-size:16.5px;color:var(--muted);margin:0 0 24px}
+
+  .form-group{margin:0 0 20px}
+  .form-group label{display:block;font-size:14px;font-weight:700;margin-bottom:6px;color:var(--ink)}
+  .form-group input{
+    width:100%;padding:11px 14px;border:1px solid var(--border);
+    border-radius:8px;font:inherit;font-size:15px;outline:none
+  }
+  .form-group input:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(14,42,63,0.12)}
+
+  .alert{border-radius:10px;padding:16px 20px;margin:0 0 26px;font-size:14.5px;background:#eef4f8;border:1px solid #d3e2ec;color:#24465a}
+  .alert-info{background:#fdf6e3;border-color:#ead9a8;color:#7a5c00}
+  .alert ul{margin:10px 0 0;padding-left:20px;color:inherit}
+  .alert li{margin-bottom:6px}
+
+  .quiz-header{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+  .progress-text{font-weight:800;font-size:15px;color:var(--navy)}
+  .progress-bar{width:260px;height:8px;background:#e3eaf1;border-radius:4px;overflow:hidden}
+  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--navy),var(--gold));transition:width .4s ease}
+  .quiz-meta{display:flex;gap:12px;align-items:center}
+  .topic-badge{
+    font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;
+    padding:4px 10px;border-radius:20px;background:#eef2f6;color:var(--navy);border:1px solid var(--border)
+  }
+  .timer{
+    font-variant-numeric:tabular-nums;font-weight:800;font-size:17px;color:var(--navy);
+    background:#fff;border:1px solid var(--border);padding:4px 12px;border-radius:8px
+  }
+
+  .question-text{font-size:18.5px;font-weight:700;color:var(--ink);margin:0 0 18px;line-height:1.5}
+
+  .hint-row{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+  .hint-text{
+    font-size:14px;color:#3d5a73;background:#eef4f8;border:1px solid #d3e2ec;
+    border-radius:8px;padding:10px 14px;display:none;margin-top:8px;flex-basis:100%
+  }
+
+  .options{display:flex;flex-direction:column;gap:10px}
+  .opt-btn{
+    display:flex;justify-content:space-between;align-items:center;width:100%;
+    padding:14px 18px;border:2px solid var(--border);border-radius:10px;
+    background:#fff;color:var(--ink);font-size:16px;font-weight:600;
+    text-align:left;cursor:pointer;transition:all .18s ease
+  }
+  .opt-btn:hover{border-color:var(--navy);background:#eef4f8;transform:translateY(-1px);box-shadow:0 4px 12px rgba(14,42,63,0.10)}
+  .opt-btn:active{transform:translateY(0)}
+  .opt-btn .letter{
+    font-size:13px;font-weight:800;color:var(--muted);border:1px solid var(--border);
+    border-radius:6px;width:26px;height:26px;display:grid;place-items:center;flex-shrink:0;margin-left:10px
+  }
+  .opt-btn.correct{background:var(--ok-bg)!important;border-color:var(--ok)!important;color:var(--ok)!important}
+  .opt-btn.wrong{background:var(--bad-bg)!important;border-color:var(--bad)!important;color:var(--bad)!important}
+  .opt-btn.disabled{pointer-events:none;opacity:.84}
+
+  .feedback{
+    margin-top:18px;padding:18px 20px;border-radius:10px;animation:fadeIn .4s ease;border-left:5px solid
+  }
+  .feedback.ok{background:var(--ok-bg);border-left-color:var(--ok);color:#1f5c38}
+  .feedback.bad{background:var(--bad-bg);border-left-color:var(--bad);color:#8c251e}
+  .feedback .head{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px;margin-bottom:8px}
+  .feedback .explain{font-size:14.5px;color:inherit;line-height:1.55}
+  .feedback.hidden{display:none}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  .nav-controls{margin-top:22px;display:flex;justify-content:flex-end}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;border:none;border-radius:10px;
+    padding:12px 22px;font:inherit;font-weight:700;font-size:15px;cursor:pointer;transition:all .2s
+  }
+  .btn-primary{background:var(--navy);color:#fff}
+  .btn-primary:hover{background:var(--gold-hover);color:var(--navy-dark)}
+  .btn-primary:active{transform:scale(0.97)}
+  .btn-outline{background:#fff;border:2px solid var(--border);color:var(--navy)}
+  .btn-outline:hover{border-color:var(--navy);background:#f4f7fa}
+  .btn-small{padding:8px 16px;font-size:13.5px;font-weight:700}
+  .btn-large{padding:16px 28px;font-size:17px}
+
+  .results-head{text-align:center;margin-bottom:26px}
+  .results-head h2{margin:0 0 10px;font-size:26px}
+  .big-score{font-size:56px;font-weight:800;color:var(--navy);line-height:1}
+  .big-score span{font-size:22px;font-weight:600;color:var(--mixed,muted)}
+  .grade-badge{
+    display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:30px;
+    font-weight:800;font-size:17px;margin-top:14px;white-space:nowrap
+  }
+  .grade-A{background:var(--ok-bg);color:var(--ok);border:1px solid #b7e4c7}
+  .grade-B{background:#eef6ff;color:#1d6f9b;border:1px solid #b8dff0}
+  .grade-C{background:#fdf6e3;color:#7a5c00;border:1px solid #ead9a8}
+  .grade-D{background:#fbeae7;color:#a84326;border:1px solid #f0cbb8}
+  .grade-F{background:var(--bad-bg);color:var(--bad);border:1px solid #f5c2c2}
+
+  .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:26px}
+  .meta-item{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+  .meta-item .val{font-size:21px;font-weight:800;color:var(--navy);display:block}
+  .meta-item .lab{font-size:12.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.6px}
+
+  .score-msg{font-size:16px;color:var(--muted);margin:10px 0 24px;line-height:1.6}
+  .score-msg strong{color:var(--ink)}
+
+  .review-title{font-size:16px;font-weight:800;color:var(--navy);margin:0 0 14px;display:flex;align-items:center;gap:8px}
+  .review-list{display:flex;flex-direction:column;gap:12px}
+  .review-item{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+  .review-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+  .review-q{font-weight:700;font-size:14.5px;color:var(--ink);max-width:720px}
+  .review-topic{
+    font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;
+    padding:3px 9px;border-radius:10px;background:#eef2f6;color:var(--navy)
+  }
+  .review-status{font-size:13px;font-weight:800}
+  .review-status.ok{color:var(--ok)}
+  .review-status.bad{color:var(--bad)}
+  .review-ans{margin:4px 0 8px;font-size:14px;line-height:1.5}
+  .review-ans b{color:var(--navy)}
+  .review-expl{font-size:13.5px;color:var(--muted);line-height:1.55;border-top:1px solid #eceff4;padding:8px 0 0}
+  .review-expl strong{color:var(--ink)}
+
+  .action-bar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+  .foot-note{margin:0}
+
+  @media print{
+    body{background:#fff;padding:0}
+    .screen{display:none !important}
+    #results-screen{display:block !important}
+    .card{box-shadow:none;border:none;padding:0}
+    .btn,.action-bar,.hint-row,.nav-controls{display:none !important}
+    body *{visibility:hidden}
+    #results-screen,#results-screen *{visibility:visible}
+    #results-screen{position:static;left:0;top:0;width:100%;min-height:auto}
+  }
+  @media (max-width:600px){
+    .container{padding:16px 14px}
+    .card,.start-card{padding:24px 18px}
+    .progress-bar{width:140px}
+    .quiz-header{flex-direction:column;align-items:flex-start}
+    .big-score{font-size:40px}
+    .action-bar{flex-direction:column}
+    .action-bar .btn{width:100%;justify-content:center}
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header class="uni-header">
+    <div class="uni-kind">Universidad de América</div>
+    <div class="uni-div">Facultad de Ingeniería · Mecánica de Fluidos</div>
+    <div class="uni-title">
+      <h1>Cuestionario Interactivo de Conceptos</h1>
+      <p class="uni-sub">Bombas hidráulicas &nbsp;·&nbsp; Sistemas de tuberías en serie &nbsp;·&nbsp; Selección y operación de bombas centrífugas</p>
+    </div>
+    <div class="uni-prof">
+      <strong>Profesor Ph.D. Juan Sandoval Herrera</strong>
+      <span>Asignatura: Mecánica de Fluidos &nbsp;·&nbsp; 2026</span>
+    </div>
+    <div class="uni-rule"></div>
+  </header>
+
+  <section id="start-screen" class="screen active">
+    <div class="card start-card">
+      <h2>📋 Inicie su intento</h2>
+      <p class="lead">Evalúe sus conocimientos sobre <strong>bombas hidráulicas</strong>, <strong>sistemas de tuberías en serie</strong> y <strong>selección y operación de bombas centrífugas</strong>. El cuestionario integra la sesión de sistemas de tuberías en serie (problemas de clase I, II y III), la presentación teórica de selección de bombas y la clase de hoy: curvas del fabricante y del sistema, punto de operación real, control de capacidad, efectos de fluidos viscosos y arreglos en serie y en paralelo.</p>
+
+      <div class="form-group">
+        <label for="studentName">👤 Nombre del estudiante (opcional)</label>
+        <input type="text" id="studentName" placeholder="Ej. María García" maxlength="60">
+      </div>
+
+      <div class="alert alert-info">
+        <strong>Cómo funciona:</strong>
+        <ul>
+          <li><strong>50 preguntas</strong> de nivel intermedio; responda cada una eligiendo una de las cuatro opciones.</li>
+          <li>Puede solicitar una <strong>pista</strong> antes de responder.</li>
+          <li>Al contestar, recibe <strong>retroalimentación inmediata</strong> con la explicación del concepto.</li>
+          <li>Al final obtiene una <strong>acta de resultados</strong> con puntaje, calificación y detalle por pregunta.</li>
+          <li><strong>Cada nuevo intento aleatoriza el orden de las preguntas y el orden de las respuestas.</strong></li>
+        </ul>
+      </div>
+
+      <button id="btn-start" class="btn btn-primary btn-large">▶ Comenzar intento</button>
+    </div>
+  </section>
+
+  <section id="quiz-screen" class="screen hidden">
+    <div class="quiz-header">
+      <div class="quiz-progress">
+        <span class="progress-text" id="progressText">Pregunta <span id="currNum">1</span> de <span id="totNum">20</span></span>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+      <div class="quiz-meta">
+        <span class="badge topic-badge" id="topicBadge">Tema</span>
+        <span class="timer" id="timer">00:00</span>
+      </div>
+    </div>
+
+    <div class="card quiz-card">
+      <div id="questionText" class="question-text"></div>
+      <div class="hint-row" id="hintRow">
+        <button id="btn-hint" class="btn btn-outline btn-small">💡 Mostrar pista</button>
+        <div id="hintText" class="hint-text"></div>
+      </div>
+      <div id="options" class="options"></div>
+      <div id="feedback" class="feedback hidden"></div>
+      <div class="nav-controls">
+        <button id="btn-next" class="btn btn-primary hidden">▶ Siguiente pregunta</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="results-screen" class="screen hidden">
+    <div class="card results-card" style="padding:40px 32px;">
+      <div class="results-head">
+        <h2>📄 ¡Intento finalizado!</h2>
+        <div class="big-score"><span id="pctNum">0</span><span>%</span></div>
+        <div id="gradeBadge" class="grade-badge grade-F">—</div>
+        <p class="score-msg" id="msg"></p>
+      </div>
+
+      <div class="meta-grid">
+        <div class="meta-item"><span class="val" id="scoreNum">0 / 0</span><span class="lab">Puntaje</span></div>
+        <div class="meta-item"><span class="val" id="nameVal">—</span><span class="lab">Estudiante</span></div>
+        <div class="meta-item"><span class="val" id="timeVal">00:00</span><span class="lab">Tiempo</span></div>
+        <div class="meta-item"><span class="val" id="dateVal">—</span><span class="lab">Fecha</span></div>
+      </div>
+
+      <h3 class="review-title">📋 Repaso por pregunta</h3>
+      <div class="review-list" id="reviewList"></div>
+
+      <div class="action-bar">
+        <button id="btn-new" class="btn btn-primary">🔄 Nuevo intento (aleatorio)</button>
+        <button id="btn-download" class="btn btn-outline">⬇ Descargar acta (.txt)</button>
+        <button id="btn-print" class="btn btn-outline">🖨 Imprimir acta</button>
+      </div>
+      <p class="foot-note">Cada nuevo intento reordena preguntas y respuestas al azar.</p>
+    </div>
+  </section>
+</div>
+
+<footer class="uni-header" style="border-top:none;padding:26px 32px;background:var(--navy-dark);margin-top:10px">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;width:100%">
+    <div>
+      <div style="color:#b9c6d2;font-size:13.5px">
+        Universidad de América &nbsp;·&nbsp; Asignatura: Mecánica de Fluidos &nbsp;·&nbsp; 2026 &nbsp;·&nbsp; Profesor Ph.D. Juan Sandoval Herrera
+      </div>
+      <div style="color:#8fa3b8;font-size:12.5px;margin-top:4px">
+        Fuentes: sesión web "Sistemas de tuberías en serie", "Presentación teórica de Selección de Bombas" y "Selección y operación de bombas centrífugas".
+      </div>
+    </div>
+    <div style="color:var(--gold);font-size:12.5px;font-weight:800;letter-spacing:1px;text-align:right">
+      Exportable en GitHub · archivo HTML único listo para GitHub Pages
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  const BANK = [
+    { id:1, topic:"Tuberías en serie", q:"En un sistema de tuberías en serie, por conservación de la masa, el caudal Q:", options:["Es el mismo en todos los tramos de la línea","Cambia en cada tramo proporcionalmente al diámetro","Solo es constante si todos los tramos tienen el mismo diámetro","Se reparte entre tramos según sus longitudes"], correct:0, hint:"En serie no hay derivaciones: todo el caudal que entra por un tramo sale por el siguiente.", explanation:"En serie se cumple Q = constante en cada tramo; por continuidad Q = v·A, así que al cambiar el diámetro varía la velocidad (v = 4Q/πD²), no el caudal." },
+    { id:2, topic:"Tuberías en serie", q:"¿Cómo se obtienen las pérdidas de carga totales ΣhL en una línea en serie?", options:["Sumando las pérdidas de cada tramo: ΣhL = hL₁ + hL₂ + …","Tomando solo la pérdida del tramo más largo","Promediando las pérdidas de todos los tramos","Multiplicando la pérdida de un tramo por el número de tramos"], correct:0, hint:"La energía se va \"consumiendo\" tramo a tramo a lo largo del recorrido.", explanation:"ΣhL = ΣhLᵢ; cada tramo usa su propia velocidad, número de Reynolds, factor de fricción y accesorios." },
+    { id:3, topic:"Tuberías en serie", q:"Ecuación de energía entre los puntos 1 y 2 con bomba (hA) y sin turbina (hR = 0):", options:["(p₁/γ) + z₁ + (v₁²/2g) + hₐ - ΣhL = (p₂/γ) + z₂ + (v₂²/2g)","(p₁/γ) + z₁ + (v₁²/2g) - hₐ + ΣhL = (p₂/γ) + z₂ + (v₂²/2g)","(p₁/γ) + z₁ + (v₁²/2g) = (p₂/γ) + z₂ + (v₂²/2g)","hₐ = ΣhL (siempre)"], correct:0, hint:"La cabeza de bomba suma energía; las pérdidas de fricción y locales la restan.", explanation:"Balance de energía (Bernoulli extendido) con bomba: la cabeza manométrica disponible iguala la cabeza requerida más las pérdidas." },
+    { id:4, topic:"Tuberías en serie", q:"¿En qué clase de problema (I, II o III) el caudal Q es un dato conocido, por lo que NO es necesario iterar para hallarlo?", options:["Clase I — se conoce Q y se halla la potencia requerida","Clase II — se conoce la energía disponible y se halla Q","Clase III — se conoce Q y la pérdida admisible, se halla el diámetro","En las tres clases se itera en Q"], correct:0, hint:"Clase I: Dato Q → Incógnita hₐ y potencias.", explanation:"En Clase I la velocidad se conoce desde el primer paso (v = Q/A); la única iteración interna es la de Colebrook–White para f, resuelta numéricamente por la app del curso." },
+    { id:5, topic:"Tuberías en serie", q:"En un problema de Clase II, ¿qué incógnita se resuelve por iteración?", options:["El caudal Q, anulando F(Q) = hdisp − ΣhL(Q) por bisección","El diámetro D de cada tramo","La potencia eléctrica del motor","El factor de fricción f solo, sin tocar Q"], correct:0, hint:"No se conoce v al arrancar, por lo que no hay Re ni f; se supone f, se despeja v y se corrige hasta convergencia.", explanation:"La app resuelve F(Q) = hdisp − ΣhL,tramos(Q) = 0 por bisección en Q, tramo a tramo." },
+    { id:6, topic:"Tuberías en serie", q:"En un problema de Clase III, ¿qué incógnita se determina?", options:["El diámetro interior mínimo teórico D y su talla comercial (con hL(D) = hadm)","El caudal máximo que soporta la línea","La potencia de la bomba","El número de Reynolds del fluido"], correct:0, hint:"Se conocen Q exigido y pérdida admisible; se despeja D de una ecuación no lineal (≈ D⁻⁵) y se elige la talla comercial inmediatamente superior.", explanation:"Dmín por bisección/Newton; luego se verifica que la talla anterior falle y que la velocidad quede en el rango de servicio." },
+    { id:7, topic:"Tuberías en serie", q:"Según Darcy–Weisbach con pérdidas locales (método Crane TP-410), la pérdida de carga de un tramo es:", options:["hL = f·(L/D)·(v²/2g) + ΣK·(v²/2g)","hL = f·(D/L)·(v²/2g)","hL = ΣK·(v²/2g) (solo accesorios)","hL = f·(L/D)·(v/2g)"], correct:0, hint:"K = Kdirecto + (Le/D)·fT, donde fT no depende de Re.", explanation:"Pérdida por fricción (Darcy) más pérdidas locales de accesorios, ambas proporcionales a v²/2g." },
+    { id:8, topic:"Tuberías en serie", q:"Para régimen laminar, el factor de fricción de Darcy es:", options:["f = 64/Re","f = 0,25·[log₁₀(ε/3,7D)]⁻² (aprox. zona rugosa)","f = constante = 0,02","f = Re/64"], correct:0, hint:"En turbulento se usa Colebrook–White (Newton–Raphson) o el abaco de Moody.", explanation:"Laminar: f = 64/Re. Turbulento: Colebrook–White; en zona rugosa aproxima fT = 0,25·[log₁₀(ε/3,7D)]⁻²." },
+    { id:9, topic:"Tuberías en serie", q:"¿Por qué el tramo de menor diámetro (\"tramo cuello\") suele dominar las pérdidas en serie?", options:["Porque aproximadamente hf ∝ f·L·Q²/D⁵, así que reducir D dispara la pérdida","Porque su longitud es siempre la mayor","Porque su velocidad es siempre la menor","Nunca domina; todas las pérdidas son iguales"], correct:0, hint:"La velocidad crece con 1/D² y la pérdida friccional con aproximadamente 1/D⁵.", explanation:"Al achicar el diámetro, v sube con 1/D² y hf con aproximadamente 1/D⁵; un tramo corto pero angosto puede consumir la mayor parte de la energía." },
+    { id:10, topic:"Tuberías en serie", q:"En una bomba Clase I, las potencias se calculan como:", options:["Ph = ρgQhₐ ; Pfreno = Ph/ηb ; Peléct = Pfreno/ηm","Ph = ρgQhₐ ; Peléct = Ph·ηb·ηm","Ph = ρgQ / hₐ","Solo se reporta la potencia hidráulica"], correct:0, hint:"Rendimiento de bomba ηb y rendimiento de motor ηm; el titular de compra suele ser la eléctrica con margen.", explanation:"Energía útil al fluido Ph = ρgQhₐ; potencia al eje Pfreno = Ph/ηb; eléctrica Peléct = Pfreno/ηm (y con margen de seguridad si se pide)." },
+    { id:11, topic:"Tuberías en serie", q:"Las pérdidas por accesorios en un tramo se calculan como (método Le/D de Crane):", options:["K = Kdirecto + (Le/D)·fT","K = número de accesorios × L","K = f·L/D (solo fricción)","K = 1 siempre (cada accesorio cuesta una cabeza de velocidad)"], correct:0, hint:"fT se obtiene de la rugosidad relativa y no depende de Re (zona completamente turbulenta).", explanation:"Cada accesorio aporta un Kdirecto tabulado más su equivalente en diámetros de tubería recta, (Le/D)·fT." },
+    { id:12, topic:"Bombas hidráulicas", q:"Desde la perspectiva termodinámica, una bomba hidráulica es:", options:["Un sistema abierto en flujo estacionario que incrementa la entalpía y la presión de un fluido incompresible","Una máquina que trabaja con fluidos compresibles como un compresor","Un sistema cerrado que no intercambia masa con el entorno","Un equipo que reduce la presión del fluido para transportarlo"], correct:0, hint:"Diferencia clave con compresores: opera con densidad constante (Δh = ΔP/ρ en condiciones ideales).", explanation:"La bomba aumenta la entalpía y presión del líquido incompresible; los incrementos térmicos representan pérdidas de energía, no aporte útil." },
+    { id:13, topic:"Bombas hidráulicas", q:"¿Cuál es la relación entre potencia al freno (BHP) y potencia hidráulica (Ph)?", options:["BHP = Ph / η","BHP = Ph · η","BHP = Ph + η","BHP = Ph - η"], correct:0, hint:"η es la relación entre potencia útil y potencia requerida en el eje.", explanation:"Eficiencia η = Ph/BHP → BHP = Ph/η. Las ineficiencias son hidráulicas (fricción interna), volumétricas (fugas) y mecánicas (rodamientos, sellos)." },
+    { id:14, topic:"Bombas hidráulicas", q:"El punto de mejor rendimiento de una bomba se denomina:", options:["BEP (Best Efficiency Point)","Punto de shut-off","Punto de run-out","Punto de cavitación"], correct:0, hint:"El rango preferido de operación (POR) es aproximadamente el 70–120% del BEP.", explanation:"Operar cerca del BEP maximiza la eficiencia y minimiza vibraciones; fuera del POR se reduce la vida útil del equipo." },
+    { id:15, topic:"Bombas hidráulicas", q:"Según las leyes de affinidad, si la velocidad de giro se reduce a la mitad (N₂ = N₁/2) y η se considera constante:", options:["Q se reduce a la mitad, H a la cuarta parte y P a la octava parte","Q, H y P se reducen todos a la mitad","Q se duplica, H se cuadruplica y P se octuplica","No cambia nada si el diámetro del impulsor es el mismo"], correct:0, hint:"Q ∝ N ; H ∝ N² ; P ∝ N³ (también aplica variando el diámetro D del impulsor).", explanation:"Reducir a la mitad la velocidad: Q₂ = 0,5 Q₁; H₂ = 0,25 H₁; P₂ = 0,125 P₁. El control de velocidad ahorra energía exponencialmente, pero la nueva carga debe superar la carga estática del sistema." },
+    { id:16, topic:"Bombas hidráulicas", q:"El punto de operación real de una bomba en una instalación es:", options:["La intersección de la curva Q–H de la bomba con la curva del sistema H_sist = H_est + K·Q²","Siempre el punto de shut-off (caudal cero)","Siempre el punto de run-out (caudal máximo)","El punto de máxima eficiencia independientemente del sistema"], correct:0, hint:"La curva del sistema es la energía requerida para circular el fluido: carga estática más pérdidas que crecen con Q².", explanation:"El caudal real se establece donde la cabeza que la bomba puede entregar iguala la cabeza que el sistema exige a ese caudal." },
+    { id:17, topic:"Bombas hidráulicas", q:"La cavitación en una bomba ocurre cuando:", options:["La presión absoluta en la succión cae por debajo de la presión de vapor Pv del fluido","La presión en la descarga supera la presión de vapor","La temperatura del fluido es inferior a 10 °C","El caudal es exactamente el del BEP"], correct:0, hint:"Se forman burbujas en el ojo del impulsor que implosionan en zonas de alta presión (ruido a \"piedras\" y pitting).", explanation:"Las cavidades de vapor viajan al impulsor y colapsan violentamente, generando ondas de choque, erosión de metales, ruido extremo y caída del rendimiento hidráulico." },
+    { id:18, topic:"Bombas hidráulicas", q:"Para evitar cavitación se debe cumplir:", options:["NPSHa ≥ NPSHr × A (con margen de seguridad A)","NPSHa ≤ NPSHr","NPSHa = NPSHr / 2","No existe condición; la cavitación es inevitable"], correct:0, hint:"NPSHa = patm/γ + Hs − hf − hvp/γ; si T sube, hvp sube y NPSHa cae.", explanation:"Ejemplo del material: agua a 10 °C con patm = 10,33 mca, Hs = −4 m, hf = 1,7 m, hvp = 0,12 mca da NPSHa = 4,51 mca. A 50 °C, hvp = 1,26 mca y el NPSHa cae dramáticamente." },
+    { id:19, topic:"Bombas hidráulicas", q:"Velocidades recomendadas en el diseño de tuberías de succión y descarga:", options:["Succión 1,0–2,0 m/s; descarga 2,0–3,0 m/s","Succión 3,0–5,0 m/s; descarga 1,0–2,0 m/s","Ambas 5,0–8,0 m/s para reducir el tamaño de la tubería","No hay velocidades recomendadas; se elige por el tamaño de la brida"], correct:0, hint:"La succión busca minimizar pérdidas y maximizar el NPSHa; la descarga equilibra costo inicial de tubería y costo eléctrico por fricción.", explanation:"El diámetro no debe elegirse por el tamaño de la brida, sino por velocidades óptimas; una succión excesivamente rápida erosiona el impulsor y reduce el NPSHa." },
+    { id:20, topic:"Bombas hidráulicas", q:"Una válvula de globo abierta tiene una longitud equivalente de aproximadamente:", options:["340 diámetros de tubería recta (Le/D = 340)","1 diámetro de tubería recta","10 diámetros de tubería recta","No equivale a longitud recta alguna"], correct:0, hint:"Las válvulas de globo son de los accesorios con mayores pérdidas locales.", explanation:"Método Le/D (Crane TP-410): una válvula de globo abierta equivale a 340 diámetros de tubería en fricción; por eso regular con globo afecta fuertemente al caudal." },{ id:21, topic:"Curvas del fabricante", q:"¿Qué representa la curva característica de una bomba centrífuga elaborada por el fabricante?", options:["La altura dinámica total H que la bomba puede desarrollar en función del caudal Q entregado","La potencia eléctrica consumida frente al tiempo de operación","El caudal que entrega la bomba frente al diámetro de la tubería de descarga","La presión de succión frente a la temperatura del fluido"], correct:0, hint:"Es el rendimiento intrínseco del equipo: evalúa la altura (oferta) para cada caudal.", explanation:"La curva H-Q define el rendimiento hidráulico de la máquina a velocidad constante; los fabricantes la obtienen en bancos de pruebas, usualmente bombeando agua a temperatura ambiente." },
+  { id:22, topic:"Curvas del fabricante", q:"La forma típica de la curva H-Q de una bomba centrífuga es:", options:["Parabólica descendente: a mayor caudal exigido, menor altura puede vencer la bomba","Recta ascendente: la altura crece con el caudal","Horizontal: la altura es constante para cualquier caudal","Creciente hasta un máximo y luego constante"], correct:0, hint:"A medida que aumenta el flujo exigido por la instalación, la altura máxima que puede vencer la máquina disminuye progresivamente.", explanation:"El comportamiento característico es una parábola descendente: la bomba entrega su mayor altura con caudal nulo (shut-off) y la reduce progresivamente al aumentar Q." },
+  { id:23, topic:"Curvas del fabricante", q:"¿En qué condiciones obtienen los fabricantes las curvas de desempeño publicadas?", options:["Con agua fría (baja viscosidad) a temperatura ambiente, en banco de pruebas y a velocidad constante","Con aceite hidráulico a 80 °C y velocidad variable","Con el fluido real de cada cliente y su temperatura de proceso","Con aire comprimido a presión atmosférica"], correct:0, hint:"Esta es la razón por la cual los fluidos viscosos requieren correcciones.", explanation:"Las curvas se levantan con agua fría, cuya resistencia al corte es muy baja; por eso al bombear fluidos viscosos hay que aplicar correcciones al desempeño nominal." },
+  { id:24, topic:"Curvas del fabricante", q:"Dentro de una familia de curvas, ¿qué representa cada curva individual para un mismo modelo de carcasa?", options:["El desempeño con un diámetro de impulsor diferente (recorte), a velocidad angular constante","Un caudal distinto de diseño para la misma bomba","Una temperatura distinta del fluido bombeado","Una rugosidad distinta de la tubería de descarga"], correct:0, hint:"Los fabricantes ensamblan impulsores de distintos diámetros (por ejemplo, de 6 a 10 pulgadas) en la misma armadura.", explanation:"La gráfica compuesta permite seleccionar el diámetro exacto del impulsor o realizar recortes mecánicos para ajustar finamente el punto de operación a los requerimientos del sistema." },
+  { id:25, topic:"Curvas del fabricante", q:"Si se incrementa el diámetro del impulsor manteniendo la misma carcasa y la misma velocidad de giro:", options:["Aumentan la velocidad tangencial del fluido al salir de los álabes y, por tanto, la capacidad de flujo y la carga suministrada","Disminuye la carga, porque el fluido recorre más camino","No cambia nada, porque la carcasa es la misma","Aumenta el caudal pero disminuye la altura total"], correct:0, hint:"Mayor diámetro periférico implica mayor velocidad tangencial en la punta de los álabes.", explanation:"Un diámetro periférico mayor eleva la velocidad tangencial del fluido al abandonar los álabes, lo que se traduce en mayor capacidad de flujo y mayor altura (presión) total, con el correspondiente aumento de la potencia absorbida." },
+  { id:26, topic:"Curvas del sistema", q:"La curva de resistencia del sistema (SRC) representa:", options:["La energía que se necesita para mover un volumen de fluido a través de la instalación, para cada caudal","La energía que la bomba puede entregar en su punto de máxima eficiencia","La potencia eléctrica máxima que soporta el motor","La curva de eficiencia de la bomba frente al caudal"], correct:0, hint:"La SRC es la demanda: lo que la instalación exige, no lo que la bomba ofrece.", explanation:"La SRC es la curva de demanda del sistema y consta de dos partes: la carga estática (independiente de Q) y la carga dinámica o de fricción (función de Q²)." },
+  { id:27, topic:"Curvas del sistema", q:"La carga estática de una instalación está conformada por:", options:["El desnivel topográfico a vencer más la diferencia de presiones entre depósitos","Las pérdidas primarias en tubería recta más las secundarias en accesorios","La altura de velocidad en la descarga de la bomba","La potencia al freno dividida entre el caudal"], correct:0, hint:"Es la energía fija que debe superarse incluso antes de que el líquido fluya.", explanation:"La carga estática es independiente del caudal: la componen la diferencia de presiones (p₂−p₁)/γ y el desnivel topográfico (z₂−z₁)." },
+  { id:28, topic:"Curvas del sistema", q:"La carga dinámica (fricción) de la curva del sistema varía:", options:["Directamente con el cuadrado del caudal (o de la velocidad del fluido)","Linealmente con el caudal","Inversamente con el caudal","Es constante, igual que la carga estática"], correct:0, hint:"Incluye las pérdidas primarias en tubería recta y las secundarias en válvulas, codos y tes.", explanation:"Las pérdidas totales hL,T crecen de manera parabólica con el caudal (proporcionales a v²/2g), lo que da a la curva del sistema su curvatura ascendente característica." },
+  { id:29, topic:"Curvas del sistema", q:"La ecuación de la carga total requerida por una instalación, según el balance de energía, es:", options:["H_Total = (p₂ − p₁)/γ + (z₂ − z₁) + hL,Total","H_Total = (z₂ − z₁) − hL,Total","H_Total = hL,Total − (p₂ − p₁)/γ","H_Total = (p₂ − p₁)·γ + (z₂ + z₁) + hL,Total"], correct:0, hint:"Los dos primeros términos son la carga estática y el tercero la pérdida de energía total.", explanation:"La carga total requerida suma la diferencia de presiones, el desnivel topográfico y las pérdidas totales de energía (primarias y secundarias en succión y descarga)." },
+  { id:30, topic:"Curvas del sistema", q:"En un circuito cerrado que retorna al mismo tanque (sin desnivel y sin diferencia de presiones entre extremos), la curva del sistema:", options:["Pasa por el origen: toda la carga requerida es dinámica (solo pérdidas por fricción)","Es una recta horizontal a la altura de shut-off","Es decreciente con el caudal","No existe curva del sistema en circuitos cerrados"], correct:0, hint:"Si la carga estática es cero, con Q = 0 la carga requerida también es cero.", explanation:"Cuando no hay carga estática la curva del sistema es una parábola que parte del origen, H = K·Q², y su intersección con la curva de la bomba fija el punto de operación." },
+  { id:31, topic:"Punto de operación", q:"El punto de operación real (OP) de una bomba instalada se determina como:", options:["La intersección de la curva característica de la bomba (oferta) con la curva del sistema (demanda)","El punto de mayor eficiencia de la bomba, siempre","El punto de caudal cero (shut-off)","El caudal de diseño del fabricante, independientemente de la instalación"], correct:0, hint:"Oferta y demanda se igualan en un único punto en estado estacionario.", explanation:"Al superponer ambas curvas, la intersección dictamina el caudal real entregado y la carga de trabajo en estado estacionario para ese acoplamiento específico." },
+  { id:32, topic:"Punto de operación", q:"¿Qué ocurre con el punto de operación si se modifica la tubería (por ejemplo, se agrega un accesorio) o se cambia el motor?", options:["Se establece un nuevo punto de equilibrio, porque cambia una de las dos curvas","Se mantiene igual, porque la bomba no cambió","Se pierde la capacidad de bombear fluido","El caudal se duplica automáticamente"], correct:0, hint:"Cualquier alteración en la instalación o en el accionamiento desplaza una de las dos curvas.", explanation:"La igualdad oferta-demanda se restablece en otra intersección: el sistema exige más (o menos) carga para cada caudal, por lo que el nuevo equilibrio se ubica en otro Q y otra H." },
+  { id:33, topic:"Punto de operación", q:"Para una instalación con carga estática de 15 m y pérdidas hf = 0,5·Q², acoplada a una bomba Hbomba = 80 − 0,15·Q², el punto de operación es (Q en las mismas unidades de las ecuaciones):", options:["Q = 10 y H = 65 m","Q = 65 y H = 10 m","Q = 15 y H = 80 m","Q = 5 y H = 78,75 m"], correct:0, hint:"Iguale 15 + 0,5·Q² = 80 − 0,15·Q² y despeje Q².", explanation:"Igualando: 0,65·Q² = 65 → Q² = 100 → Q = 10; reemplazando en la curva del sistema, H = 15 + 0,5(100) = 65 m. Esa es la intersección que se halla tabulando o resolviendo la ecuación." },
+  { id:34, topic:"Punto de operación", q:"Operar la bomba lejos del BEP (punto de máxima eficiencia):", options:["Reduce la vida útil del equipo y consume más potencia de forma innecesaria","Es indiferente; el BEP solo importa en ensayos de laboratorio","Aumenta la eficiencia porque crece la presión","Elimina por completo el riesgo de cavitación"], correct:0, hint:"Fuera del rango preferido aparecen vibraciones, cargas desbalanceadas y recirculación interna.", explanation:"El punto de operación debe ubicarse lo más cerca posible del BEP; alejarse de él aumenta el consumo energético, el ruido y las vibraciones, y acorta la vida útil de sellos y rodamientos." },
+  { id:35, topic:"Punto de operación", q:"En la selección de una bomba, la verificación del motor eléctrico debe garantizar que:", options:["El motor suministre la potencia requerida (BHP) en el punto de operación, con margen, para evitar sobrecalentamiento durante el ciclo de trabajo","El motor sea siempre de mayor tamaño que la bomba, sin importar la BHP","El motor gire siempre a la máxima velocidad nominal","El motor opere con la válvula de descarga semicerrada"], correct:0, hint:"Si el punto de operación se desplaza a la derecha, la potencia absorbida puede superar la del punto de diseño.", explanation:"Hay que garantizar la potencia (HP) exacta exigida con un margen de seguridad, porque las variaciones del ciclo de trabajo pueden llevar a la bomba a caudal alto y sobrecargar el motor." },
+  { id:36, topic:"Control de capacidad", q:"Al cerrar parcialmente la válvula principal de impulsión, el punto de operación:", options:["Se desplaza hacia la izquierda: menor caudal y mayor altura, con mayor pendiente de la curva del sistema","Se desplaza hacia la derecha: mayor caudal y menor altura","No se mueve, porque la válvula no afecta a la bomba","Se ubica en el punto de shut-off sin importar el grado de cierre"], correct:0, hint:"Las válvulas alteran la curva de resistencia del sistema introduciendo pérdidas secundarias artificiales.", explanation:"El estrangulamiento aumenta la resistencia del sistema: para un mismo caudal se exige más carga, y el nuevo equilibrio se alcanza a menor Q y mayor H." },
+  { id:37, topic:"Control de capacidad", q:"La principal desventaja del control por estrangulamiento (válvula) frente al control por velocidad es que:", options:["Disipa energía en la propia válvula, reduciendo la eficiencia global del bombeo","Aumenta el caudal por encima del requerido","Impide regular el caudal de forma continua","Obliga a cambiar el diámetro del impulsor"], correct:0, hint:"La energía que la bomba entrega y que no llega al proceso termina como pérdida en la válvula.", explanation:"La válvula no modifica la curva de la bomba: la bomba sigue entregando una carga elevada que se degrada en el accesorio, con el consiguiente consumo innecesario y calentamiento del fluido." },
+  { id:38, topic:"Control de capacidad", q:"Un variador de frecuencia (VFD) actúa sobre el sistema de bombeo porque:", options:["Cambia la velocidad angular del motor y desplaza la curva característica de la bomba completa","Aumenta la pérdida de carga en la válvula de control","Modifica la curva del sistema aumentando su carga estática","Recorta el diámetro del impulsor automáticamente"], correct:0, hint:"A diferencia de la válvula, el VFD mueve la curva de la oferta, no la de la demanda.", explanation:"Al reducir las RPM, la curva H-Q se traslada hacia abajo y a la izquierda; no se introduce fricción artificial y la bomba entrega exactamente la energía que la instalación requiere." },
+  { id:39, topic:"Control de capacidad", q:"Según las leyes de afinidad, si el variador reduce la velocidad de giro a la mitad, la potencia absorbida:", options:["Se reduce a la octava parte (P ∝ N³)","Se reduce a la mitad","Permanece constante","Aumenta al doble"], correct:0, hint:"Q ∝ N, H ∝ N², P ∝ N³.", explanation:"La potencia varía con el cubo de la velocidad: bajar N al 50 % reduce Q al 50 %, H al 25 % y P al 12,5 %, de allí el ahorro drástico de energía eléctrica." },
+  { id:40, topic:"Control de capacidad", q:"¿Por qué el control por velocidad variable es preferible técnico y económicamente frente al estrangulamiento?", options:["Porque no introduce fricción artificial y la potencia absorbida cae con el cubo de la velocidad, con menor desgaste mecánico","Porque permite caudales mayores que el de diseño de la bomba","Porque elimina la necesidad de curva del sistema","Porque reduce la carga estática de la instalación"], correct:0, hint:"Compárelo con estrangular: misma regulación de caudal, distinta energía disipada.", explanation:"El VFD ajusta la energía entregada a la demandada, lo que se traduce en ahorro eléctrico significativo y menor desgaste; la válvula, en cambio, disipa energía y reduce la eficiencia global." },
+  { id:41, topic:"Efectos del fluido", q:"Si en el mismo circuito se reemplaza agua por un aceite lubricante pesado, el desempeño de la bomba:", options:["Empeora: para una misma carga el caudal disminuye y caen la altura total y la eficiencia","Mejora: la mayor densidad produce más caudal","No cambia, porque las curvas son independientes del fluido","Cambia solo la presión de descarga, no el caudal"], correct:0, hint:"La fricción interna en los álabes del impulsor aumenta sustancialmente con la viscosidad.", explanation:"Los fluidos altamente viscosos (aceites pesados, glicerina, melazas) elevan las pérdidas por fricción interna: la curva de altura decae, el caudal nominal baja y la eficiencia cae drásticamente." },
+  { id:42, topic:"Efectos del fluido", q:"Al bombear un fluido más viscoso que el agua a igual Q y H, la potencia al freno requerida:", options:["Aumenta, porque la eficiencia de la bomba disminuye y BHP = Ph/η","Disminuye, porque el fluido es más denso","No cambia, porque la potencia hidráulica es la misma","Se hace cero si el fluido es newtoniano"], correct:0, hint:"La potencia hidráulica útil es la misma, pero se necesita más potencia en el eje para lograrla.", explanation:"Con menor eficiencia, la potencia al eje debe crecer para entregar la misma potencia hidráulica; de lo contrario el motor se sobrecarga y puede quemarse." },
+  { id:43, topic:"Efectos del fluido", q:"¿Qué precaución debe tomarse al seleccionar una bomba para fluidos viscosos?", options:["Aplicar correcciones al desempeño nominal (cartas del Hydraulic Institute) y sobredimensionar el motor con margen","Usar directamente la curva de agua sin ninguna corrección","Aumentar la velocidad de giro para compensar la viscosidad","Reducir el diámetro de succión para elevar la velocidad"], correct:0, hint:"Las curvas nominales fueron levantadas con agua fría; el fluido real las modifica.", explanation:"Se requiere la corrección matemática de Q, H y η para el fluido real, para evitar la sobrecarga y el quemado del motor eléctrico; en casos extremos conviene una bomba de desplazamiento positivo." },
+  { id:44, topic:"Efectos del fluido", q:"Manteniendo el mismo caudal y la misma altura, si la gravedad específica del fluido pasa de 1,0 a 1,2, la potencia al freno:", options:["Aumenta proporcionalmente, es decir, un 20 % más","Disminuye un 20 %","No se altera, porque la gravedad específica solo afecta la succión","Se reduce a la mitad"], correct:0, hint:"En la ecuación de BHP la gravedad específica aparece como factor multiplicador.", explanation:"La BHP es proporcional a la gravedad específica (BHP = Q·H·GE/(3960·η) en unidades inglesas): un fluido 1,2 veces más denso exige 1,2 veces la potencia al freno." },
+  { id:45, topic:"Efectos del fluido", q:"Respecto a la temperatura del líquido, un aumento de esta en la succión:", options:["Aumenta la presión de vapor y reduce el NPSH disponible, acercando la cavitación","Aumenta el NPSH disponible y aleja la cavitación","No influye en el funcionamiento de la bomba","Solo cambia la potencia al freno, no la succión"], correct:0, hint:"Recuerde NPSHa = patm/γ + Hs − hf − hvp/γ.", explanation:"Al elevarse la temperatura crece la presión de vapor del líquido, el término hvp/γ aumenta y el NPSH disponible cae: la bomba queda más expuesta a cavitación." },
+  { id:46, topic:"Arreglos múltiples", q:"En una operación en paralelo, las bombas toman fluido de un colector común y descargan a una tubería común; por tanto:", options:["Los caudales se suman para una misma altura","Las alturas se suman para un mismo caudal","Se suman caudal y altura simultáneamente","El caudal total es el promedio de las bombas"], correct:0, hint:"Para construir la curva combinada en paralelo se suman los caudales a cada valor de H.", explanation:"En paralelo la curva equivalente se obtiene sumando horizontalmente los caudales de cada bomba a la misma carga; es el arreglo óptimo para demandas cíclicas o muy variables, como edificios de apartamentos." },
+  { id:47, topic:"Arreglos múltiples", q:"En una operación en serie, la descarga de una bomba alimenta la succión de la siguiente; en consecuencia:", options:["Las cargas (alturas) se suman mientras el caudal se mantiene constante a través de ambas máquinas","Los caudales se suman manteniendo la altura","Se duplica el caudal y la altura","Solo funciona con bombas de diferente tamaño"], correct:0, hint:"Para la curva combinada en serie se suman las alturas a cada caudal.", explanation:"El arreglo en serie permite alcanzar presiones extremas sin equipos de tamaño inviable; se usa en acueductos prolongados y en el interior de las bombas de etapas múltiples." },
+  { id:48, topic:"Arreglos múltiples", q:"¿Por qué al agregar bombas en paralelo el caudal total no crece de forma lineal con el número de máquinas?", options:["Porque al aumentar el caudal suben las pérdidas en la tubería y el punto de operación se desplaza sobre la curva del sistema","Porque las bombas se frenan entre sí por el giro del impulsor","Porque el motor reduce su velocidad automáticamente","Porque la carga estática se duplica con cada bomba"], correct:0, hint:"Cada bomba adicional entrega menos que su caudal nominal, porque comparte la misma curva de sistema.", explanation:"El incremento de caudal eleva la fricción del sistema, de modo que la suma volumétrica no es lineal: la curva combinada se corta con una SRC cada vez más empinada." },
+  { id:49, topic:"Arreglos múltiples", q:"Si la carga estática del sistema es muy alta y supera la altura de shut-off de la bomba que se va a añadir en paralelo:", options:["La bomba adicional no aporta caudal apreciable mientras el sistema no supere esa carga estática","La bomba adicional duplica el caudal de inmediato","El sistema entra en cavitación necesariamente","Las alturas se suman igual que en serie"], correct:0, hint:"Dos bombas iguales en paralelo entregan cero caudal adicional si la carga estática supera su altura a caudal nulo.", explanation:"En paralelo el aporte está limitado por la altura máxima de cada máquina: si la demanda estática excede ese valor, la segunda bomba opera cerca de shut-off (o incluso en recirculación) sin contribuir al caudal." },
+  { id:50, topic:"Arreglos múltiples", q:"El criterio práctico para elegir entre arreglo en paralelo y en serie es:", options:["Paralelo cuando se requiere más caudal con altura moderada; serie cuando se requiere más altura con caudal dado","Paralelo cuando se requiere más presión; serie cuando se requiere más caudal","Siempre en serie, porque suma ambas variables","Siempre en paralelo, porque la eficiencia se multiplica"], correct:0, hint:"Recuerde: paralelo suma caudales a la misma H; serie suma alturas al mismo Q.", explanation:"El paralelo responde a demandas variables de caudal (edificios, redes de distribución) y la serie a grandes longitudes o desniveles que exigen mucha presión (acueductos, multietapa)." }
+  ];
+
+  const state = {
+    studentName: '',
+    questions: [],
+    current: 0,
+    answers: [],
+    startTime: null,
+    timerInterval: null
+  };
+
+  function getEl(id){
+    const el = document.getElementById(id);
+    if(!el){
+      console.error('Elemento no encontrado en el DOM: #' + id);
+    }
+    return el;
+  }
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function showScreen(id){
+    document.querySelectorAll('.screen').forEach(el => {
+      el.classList.remove('active');
+      el.classList.add('hidden');
+    });
+    const el = getEl(id);
+    if(el){
+      el.classList.remove('hidden');
+      el.classList.add('active');
+    }
+  }
+
+  function updateTimer(){
+    if(!state.startTime) return;
+    const s = Math.floor((Date.now() - state.startTime) / 1000);
+    const tEl = getEl('timer');
+    if(tEl){
+      tEl.textContent = String(Math.floor(s / 60)).padStart(2,'0') + ':' + String(s % 60).padStart(2,'0');
+    }
+  }
+
+  function renderQuestion(){
+    const q = state.questions[state.current];
+    if(!q){
+      console.error('No hay pregunta en el índice', state.current);
+      return;
+    }
+
+    const currNum = getEl('currNum');
+    const totNum = getEl('totNum');
+    const progressFill = getEl('progressFill');
+    const progressText = getEl('progressText');
+    const topicBadge = getEl('topicBadge');
+    const questionText = getEl('questionText');
+
+    if(currNum) currNum.textContent = state.current + 1;
+    if(totNum) totNum.textContent = state.questions.length;
+    if(progressFill) progressFill.style.width = ((state.current + 1) / state.questions.length * 100) + '%';
+    if(progressText) progressText.textContent = 'Pregunta ' + (state.current + 1) + ' de ' + state.questions.length;
+    if(topicBadge) topicBadge.textContent = q.topic;
+    if(questionText) questionText.innerHTML = '<strong>' + q.topic + '.</strong> ' + q.q;
+
+    const hintRow = getEl('hintRow');
+    const btnHint = getEl('btn-hint');
+    const hintText = getEl('hintText');
+    if(hintRow) hintRow.style.display = 'flex';
+    if(btnHint){
+      btnHint.style.display = 'inline-flex';
+      btnHint.onclick = function(){
+        if(hintText){
+          hintText.textContent = q.hint;
+          hintText.style.display = 'block';
+        }
+        if(btnHint) btnHint.style.display = 'none';
+      };
+    }
+    if(hintText){
+      hintText.style.display = 'none';
+      hintText.textContent = '';
+    }
+
+    const opts = getEl('options');
+    if(opts){
+      opts.innerHTML = '';
+      q.options.forEach((opt, i) => {
+        const b = document.createElement('button');
+        b.className = 'opt-btn';
+        b.innerHTML = '<span>' + opt.text + '</span><span class="letter">' + String.fromCharCode(65 + i) + '</span>';
+        b.onclick = function(){ selectAnswer(i, b); };
+        opts.appendChild(b);
+      });
+    }
+
+    const feedback = getEl('feedback');
+    if(feedback){
+      feedback.classList.add('hidden');
+    }
+    const btnNext = getEl('btn-next');
+    if(btnNext){
+      btnNext.classList.add('hidden');
+      btnNext.onclick = function(){
+        if(state.current + 1 >= state.questions.length){
+          showResults();
+        } else {
+          state.current++;
+          renderQuestion();
+        }
+      };
+    }
+  }
+
+  function selectAnswer(idx){
+    if(state.answers[state.current] !== undefined) return;
+    const q = state.questions[state.current];
+    const correctIdx = q.options.findIndex(o => o.correct);
+    const isCorrect = idx === correctIdx;
+
+    state.answers[state.current] = {
+      selected: idx,
+      correct: correctIdx,
+      hintUsed: false
+    };
+
+    const buttons = document.querySelectorAll('.opt-btn');
+    buttons.forEach(function(b){ b.classList.add('disabled'); });
+    if(buttons[correctIdx]) buttons[correctIdx].classList.add('correct');
+    if(!isCorrect && buttons[idx]) buttons[idx].classList.add('wrong');
+
+    const fb = getEl('feedback');
+    if(fb){
+      fb.className = 'feedback ' + (isCorrect ? 'ok' : 'bad');
+      fb.innerHTML = '<div class="head"><span class="icon">' + (isCorrect ? '✅' : '❌') + '</span> <span>' + (isCorrect ? 'Respuesta correcta' : 'Respuesta incorrecta') + '</span></div><div class="explain">' + q.explanation + '</div>';
+      fb.classList.remove('hidden');
+    }
+
+    const btnNext = getEl('btn-next');
+    if(btnNext){
+      btnNext.classList.remove('hidden');
+    }
+  }
+
+  function showResults(){
+    if(state.timerInterval){
+      clearInterval(state.timerInterval);
+      state.timerInterval = null;
+    }
+    state.endTime = Date.now();
+    const correct = state.answers.filter(function(a){ return a.selected === a.correct; }).length;
+    const total = state.questions.length;
+    const pct = Math.round(correct / total * 100);
+
+    let grade = 'F (Insuficiente)', gradeClass = 'grade-F', msg = '';
+    if(pct >= 90){ grade = 'A (Sobresaliente)'; gradeClass = 'grade-A'; msg = '¡Excelente dominio de los conceptos!'; }
+    else if(pct >= 80){ grade = 'B (Muy bueno)'; gradeClass = 'grade-B'; msg = 'Buen nivel; repase los conceptos fallados.'; }
+    else if(pct >= 70){ grade = 'C (Aprobado)'; gradeClass = 'grade-C'; msg = 'Aprobado, pero conviene repasar el tema.'; }
+    else if(pct >= 60){ grade = 'D (Regular)'; gradeClass = 'grade-D'; msg = 'Nivel insuficiente; repase la teoría y los ejemplos guiados.'; }
+    else { grade = 'F (Insuficiente)'; gradeClass = 'grade-F'; msg = 'Se recomienda retomar la presentación teórica y los ejemplos guiados.'; }
+
+    const scoreNum = getEl('scoreNum');
+    const pctNum = getEl('pctNum');
+    const gb = getEl('gradeBadge');
+    const msgEl = getEl('msg');
+    const timeVal = getEl('timeVal');
+    const nameVal = getEl('nameVal');
+    const dateVal = getEl('dateVal');
+
+    if(scoreNum) scoreNum.textContent = correct + ' / ' + total;
+    if(pctNum) pctNum.textContent = pct;  // el signo % ya está en el HTML, evita "20%%"
+    if(gb){
+      gb.textContent = grade;
+      gb.className = 'grade-badge ' + gradeClass;
+    }
+    if(msgEl) msgEl.innerHTML = msg;
+    if(timeVal) timeVal.textContent = getEl('timer') ? getEl('timer').textContent : '00:00';
+    if(nameVal) nameVal.textContent = state.studentName || 'Anónimo';
+    if(dateVal) dateVal.textContent = new Date().toLocaleString('es-CO', {dateStyle: 'medium', timeStyle: 'short'});
+
+    const list = getEl('reviewList');
+    if(list){
+      list.innerHTML = '';
+      state.questions.forEach(function(q, i){
+        const a = state.answers[i] || {};
+        const selIdx = a.selected !== undefined ? a.selected : null;
+        const corIdx = q.options.findIndex(function(o){ return o.correct; });
+        const ok = selIdx === corIdx;
+        const item = document.createElement('div');
+        item.className = 'review-item';
+        const userTxt = selIdx !== null ? q.options[selIdx].text : 'Sin responder';
+        item.innerHTML =
+          '<div class="review-head">' +
+          '<div class="review-q">' + (i + 1) + '. ' + q.q + '</div>' +
+          '<span class="review-topic">' + q.topic + '</span>' +
+          '<span class="review-status ' + (ok ? 'ok' : 'bad') + '">' + (ok ? '✅ Correcto' : '❌ Incorrecto') + '</span>' +
+          '</div>' +
+          '<div class="review-ans"><b>Su respuesta:</b> ' + userTxt + '</div>' +
+          '<div class="review-ans" style="margin-top:4px;"><b>Respuesta correcta:</b> ' + q.options[corIdx].text + '</div>' +
+          '<div class="review-expl">' + q.explanation + '</div>';
+        list.appendChild(item);
+      });
+    }
+    showScreen('results-screen');
+  }
+
+  function newAttempt(){
+    const pool = BANK.map(function(q){
+      return {
+        ...q,
+        options: q.options.map(function(t, i){ return {text: t, correct: i === q.correct}; })
+      };
+    });
+    state.questions = shuffle(pool).map(function(q){
+      return { ...q, options: shuffle(q.options) };
+    });
+    state.current = 0;
+    state.answers = [];
+    state.startTime = Date.now();
+    if(state.timerInterval) clearInterval(state.timerInterval);
+    state.timerInterval = setInterval(updateTimer, 1000);
+    updateTimer();
+    renderQuestion();
+    showScreen('quiz-screen');
+  }
+
+  function stripMath(s){
+    return s
+      .replace(/Σ/g, 'Σ')
+      .replace(/π/g, 'π')
+      .replace(/ρ/g, 'ρ')
+      .replace(/η/g, 'η')
+      .replace(/Δ/g, 'Δ')
+      .replace(/≥/g, '≥')
+      .replace(/∝/g, '∝')
+      .replace(/ₐ/g, 'a')
+      .replace(/⁻¹/g, '-1')
+      .replace(/²/g, '2')
+      .replace(/³/g, '3')
+      .replace(/·/g, '*');
+  }
+
+  function downloadActa(){
+    const correct = state.answers.filter(function(a){ return a.selected === a.correct; }).length;
+    const total = state.questions.length;
+    const pct = Math.round(correct / total * 100);
+    let grade = 'F (Insuficiente)';
+    if(pct >= 90) grade = 'A (Sobresaliente)';
+    else if(pct >= 80) grade = 'B (Muy bueno)';
+    else if(pct >= 70) grade = 'C (Aprobado)';
+    else if(pct >= 60) grade = 'D (Regular)';
+
+    const lines = [];
+    lines.push('UNIVERSIDAD DE AMÉRICA — MECÁNICA DE FLUIDOS 2026');
+    lines.push('Profesor: Ph.D. Juan Sandoval Herrera');
+    lines.push('Cuestionario: Bombas Hidráulicas, Tuberías en Serie y Operación de Bombas Centrífugas');
+    lines.push('================================================================');
+    lines.push('Estudiante: ' + (state.studentName || 'Anónimo'));
+    lines.push('Fecha: ' + new Date().toLocaleString('es-CO'));
+    lines.push('Tiempo empleado: ' + (getEl('timer') ? getEl('timer').textContent : '00:00'));
+    lines.push('Resultado: ' + correct + ' / ' + total + '  (' + pct + '%)');
+    lines.push('Calificación: ' + grade);
+    lines.push('');
+    lines.push('DETALLE POR PREGUNTA');
+    lines.push('----------------------------------------------------------------');
+    state.questions.forEach(function(q, i){
+      const a = state.answers[i] || {};
+      const selIdx = a.selected !== undefined ? a.selected : null;
+      const corIdx = q.options.findIndex(function(o){ return o.correct; });
+      const ok = selIdx === corIdx;
+      lines.push('');
+      lines.push((i + 1) + '. [' + q.topic + '] ' + stripMath(q.q));
+      lines.push('   Su respuesta: ' + (selIdx !== null ? stripMath(q.options[selIdx].text) : 'Sin responder'));
+      lines.push('   Correcta: ' + stripMath(q.options[corIdx].text));
+      lines.push('   Estado: ' + (ok ? 'Correcto' : 'Incorrecto'));
+      lines.push('   Explicación: ' + stripMath(q.explanation));
+    });
+    lines.push('');
+    lines.push('Fuentes: sesión web "Sistemas de tuberías en serie", "Presentación teórica de Selección de Bombas" y "Selección y operación de bombas centrífugas".');
+    lines.push('Universidad de América, 2026.');
+
+    try {
+      const blob = new Blob([lines.join('\n')], {type: 'text/plain;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'acta_resultados_mecanica_fluidos_2026.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch(e){
+      console.error('Error descargando acta:', e);
+      alert('Error al descargar el acta.');
+    }
+  }
+
+  function startQuiz(){
+    try {
+      const nameInput = getEl('studentName');
+      state.studentName = nameInput ? nameInput.value.trim() : '';
+
+      const pool = BANK.map(function(q){
+        return {
+          ...q,
+          options: q.options.map(function(t, i){ return {text: t, correct: i === q.correct}; })
+        };
+      });
+      state.questions = shuffle(pool).map(function(q){
+        return { ...q, options: shuffle(q.options) };
+      });
+      state.current = 0;
+      state.answers = [];
+      state.startTime = Date.now();
+      if(state.timerInterval) clearInterval(state.timerInterval);
+      state.timerInterval = setInterval(updateTimer, 1000);
+      updateTimer();
+      showScreen('quiz-screen');
+      renderQuestion();
+    } catch(e) {
+      console.error('Error iniciando cuestionario:', e);
+      alert('Error al iniciar el cuestionario: ' + e.message);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    try {
+      const btnStart = getEl('btn-start');
+      const btnNew = getEl('btn-new');
+      const btnDownload = getEl('btn-download');
+      const btnPrint = getEl('btn-print');
+
+      if(btnStart) btnStart.onclick = startQuiz;
+      if(btnNew) btnNew.onclick = newAttempt;
+      if(btnDownload) btnDownload.onclick = downloadActa;
+      if(btnPrint) btnPrint.onclick = function(){ window.print(); };
+
+      showScreen('start-screen');
+    } catch(e){
+      console.error('Error inicializando:', e);
+      alert('Error al cargar el cuestionario: ' + e.message);
+    }
+  });
+})();
+</script>
+</body>
+</html>
